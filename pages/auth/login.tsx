@@ -12,6 +12,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useState } from "react";
 
 function Copyright(props: any) {
   return (
@@ -34,13 +35,19 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPassWordError] = useState(false);
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const validateEmail = (mail: string) => {
+      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+        return true;
+      }
+      return false;
+    };
+    setEmailError(!validateEmail(String(data.get("email"))));
+    setPassWordError(String(data.get("password")).length < 8);
   };
 
   return (
@@ -76,6 +83,8 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              error={emailError}
+              helperText={emailError && "이메일 형식이 올바르지 않습니다."}
             />
             <TextField
               margin="normal"
@@ -86,6 +95,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              error={passwordError}
+              helperText={passwordError && "비밀번호 형식이 올바르지 않습니다."}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

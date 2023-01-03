@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
+import axios from "axios";
 
 function Copyright(props: any) {
   return (
@@ -44,7 +45,17 @@ export default function SignUp() {
   const validatePassword = (password: string) => password.length >= 8;
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    axios
+      .post(
+        "http://localhost:8080/users/create",
+        {
+          ...signUpData,
+        },
+        { withCredentials: true }
+      )
+      .then((value) => {
+        console.log("value");
+      });
   };
 
   const [signUpData, setSignUpData] = useState({

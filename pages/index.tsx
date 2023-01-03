@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
 import { Container, createTheme, CssBaseline, Grid, List } from "@mui/material";
 import axios from "axios";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import AddTodoForm from "../src/components/AddTodoForm";
 import ToDoListItem from "../src/components/ToDoListItem";
@@ -38,7 +39,17 @@ export default function ToDoList() {
 
   const theme = createTheme();
 
-  const [selectedTodo, setSelectedTodo] = useState(-1);
+  const [selectedTodo, setSelectedTodo] = useState("");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query?.selectedId) {
+      setSelectedTodo(String(router.query?.selectedId));
+    } else {
+      setSelectedTodo("");
+    }
+  }, [router.query?.selectedId]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -64,8 +75,8 @@ export default function ToDoList() {
         </Grid>
         <Grid item sx={{ width: "50%", backgroundColor: "white" }}>
           <Container sx={{ minHeight: "100vh" }}>
-            {selectedTodo > -1
-              ? toDos[selectedTodo].content
+            {selectedTodo !== ""
+              ? toDos.find(({ id }) => id === selectedTodo)?.content
               : "메모를 선택해 주세요"}
           </Container>
         </Grid>

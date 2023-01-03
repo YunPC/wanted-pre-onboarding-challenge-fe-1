@@ -46,6 +46,7 @@ function ToDoListItem({ toDo, setToDos }: ToDoListItemProps) {
                     `http://localhost:8080/todos/${toDo.id}`,
                     {
                       title,
+                      content: toDo.content,
                     },
                     { headers: { Authorization: tokenStorage.getToken() } }
                   )

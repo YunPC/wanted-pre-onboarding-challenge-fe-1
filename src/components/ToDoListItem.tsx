@@ -6,33 +6,27 @@ import {
   Checkbox,
   ListItemText,
   IconButton,
+  ListItemButton,
 } from "@mui/material";
 
-function ToDoListItem() {
-  return (
-      <List
-        sx={{
-          bgcolor: "background.paper",
-          overflow: "auto",
-        }}
-        dense
-        component="div"
-        role="list"
-      >
-        <ListItem role="listitem" button>
-          <ListItemIcon>
-            <Checkbox tabIndex={-1} disableRipple />
-          </ListItemIcon>
-          <ListItemText>todo1</ListItemText>
-          <IconButton color="secondary" aria-label="Delete">
-            <Create fontSize="small" />
-          </IconButton>
-          <IconButton color="secondary" aria-label="Delete">
-            <Clear fontSize="small" />
-          </IconButton>
-        </ListItem>
-      </List>
+interface ToDoListItemProps {
+  toDo: {
+    title: string;
+    content: string;
+  };
+}
 
+function ToDoListItem({ toDo }: ToDoListItemProps) {
+  return (
+    <ListItemButton role="listitem">
+      <ListItemText>{toDo.title}</ListItemText>
+      <IconButton color="secondary" aria-label="Delete">
+        <Create fontSize="small" />
+      </IconButton>
+      <IconButton color="secondary" aria-label="Delete">
+        <Clear fontSize="small" />
+      </IconButton>
+    </ListItemButton>
   );
 }
 

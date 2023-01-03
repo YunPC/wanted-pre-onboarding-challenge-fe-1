@@ -1,6 +1,5 @@
 import { Create, Clear } from "@mui/icons-material";
 import {
-  Card,
   List,
   ListItem,
   ListItemIcon,
@@ -11,11 +10,8 @@ import {
 
 function ToDoListItem() {
   return (
-    <Card>
       <List
         sx={{
-          width: 200,
-          height: 230,
           bgcolor: "background.paper",
           overflow: "auto",
         }}
@@ -36,7 +32,7 @@ function ToDoListItem() {
           </IconButton>
         </ListItem>
       </List>
-    </Card>
+
   );
 }
 

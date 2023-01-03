@@ -68,7 +68,7 @@ export default function ToDoList() {
               role="list"
             >
               {toDos.map((toDo) => (
-                <ToDoListItem key={toDo.id} toDo={toDo} />
+                <ToDoListItem key={toDo.id} toDo={toDo} setToDos={setToDos} />
               ))}
             </List>
           </Container>

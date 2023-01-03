@@ -10,6 +10,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import { useRouter } from "next/router";
 import * as React from "react";
 import { useState } from "react";
 import TokenLocalStorage from "../../utils/localStorage/tokenLocalStorage";
@@ -35,6 +36,7 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 export default function SignUp() {
+  const router = useRouter();
   const validateEmail = (mail: string) => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
       return true;
@@ -58,6 +60,7 @@ export default function SignUp() {
       .then((value) => {
         const tokenStorage = new TokenLocalStorage();
         tokenStorage.setToken(value.data.token);
+        router.replace("/");
       });
   };
 

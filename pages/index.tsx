@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
-import { Container, createTheme, CssBaseline, List } from "@mui/material";
+import { Container, createTheme, CssBaseline, Grid, List } from "@mui/material";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import AddTodoForm from "../src/components/AddTodoForm";
 import ToDoListItem from "../src/components/ToDoListItem";
 import TokenLocalStorage from "../utils/localStorage/tokenLocalStorage";
@@ -38,27 +38,38 @@ export default function ToDoList() {
 
   const theme = createTheme();
 
-  console.log("theme", theme);
+  const [selectedTodo, setSelectedTodo] = useState(-1);
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container component="main" sx={{ minHeight: "100vh" }}>
-        <AddTodoForm />
-        <List
-          sx={{
-            bgcolor: "background.paper",
-            overflow: "auto",
-          }}
-          dense
-          component="div"
-          role="list"
-        >
-          {toDos.map((toDo) => (
-            <ToDoListItem key={toDo.id} toDo={toDo} />
-          ))}
-        </List>
-      </Container>
+      <AddTodoForm />
+      <Grid container sx={{ width: "80vw" }}>
+        <Grid item sx={{ width: "50%" }}>
+          <Container sx={{ minHeight: "100vh" }}>
+            <List
+              sx={{
+                bgcolor: "background.paper",
+                overflow: "auto",
+              }}
+              dense
+              component="div"
+              role="list"
+            >
+              {toDos.map((toDo) => (
+                <ToDoListItem key={toDo.id} toDo={toDo} />
+              ))}
+            </List>
+          </Container>
+        </Grid>
+        <Grid item sx={{ width: "50%", backgroundColor: "white" }}>
+          <Container sx={{ minHeight: "100vh" }}>
+            {selectedTodo > -1
+              ? toDos[selectedTodo].content
+              : "메모를 선택해 주세요"}
+          </Container>
+        </Grid>
+      </Grid>
     </ThemeProvider>
   );
 }

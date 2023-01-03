@@ -12,7 +12,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import TokenLocalStorage from "../../utils/localStorage/tokenLocalStorage";
+import { useRouter } from "next/router";
 
 function Copyright(props: any) {
   return (
@@ -51,6 +53,15 @@ export default function SignIn() {
   };
   const canSubmit =
     !!loginData.email && !!loginData.password && !emailError && !passwordError;
+
+  const route = useRouter();
+
+  useEffect(() => {
+    const tokenStorage = new TokenLocalStorage();
+    if (tokenStorage.getToken()) {
+      route.replace("/");
+    }
+  }, [route]);
 
   return (
     <ThemeProvider theme={theme}>

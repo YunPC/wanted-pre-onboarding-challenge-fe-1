@@ -37,18 +37,20 @@ const theme = createTheme();
 export default function SignIn() {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPassWordError] = useState(false);
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const validateEmail = (mail: string) => {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+      return true;
+    }
+    return false;
+  };
+  const validatePassword = (password: string) => password.length >= 8;
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const validateEmail = (mail: string) => {
-      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-        return true;
-      }
-      return false;
-    };
-    setEmailError(!validateEmail(String(data.get("email"))));
-    setPassWordError(String(data.get("password")).length < 8);
   };
+  const canSubmit =
+    !!loginData.email && !!loginData.password && !emailError && !passwordError;
 
   return (
     <ThemeProvider theme={theme}>
@@ -85,6 +87,13 @@ export default function SignIn() {
               autoFocus
               error={emailError}
               helperText={emailError && "이메일 형식이 올바르지 않습니다."}
+              onChange={(e) => {
+                setLoginData((prevLoginData) => ({
+                  ...prevLoginData,
+                  email: e.target.value,
+                }));
+                setEmailError(!validateEmail(e.target.value));
+              }}
             />
             <TextField
               margin="normal"
@@ -97,6 +106,13 @@ export default function SignIn() {
               autoComplete="current-password"
               error={passwordError}
               helperText={passwordError && "비밀번호 형식이 올바르지 않습니다."}
+              onChange={(e) => {
+                setLoginData((prevLoginData) => ({
+                  ...prevLoginData,
+                  password: e.target.value,
+                }));
+                setPassWordError(!validatePassword(e.target.value));
+              }}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -107,6 +123,7 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={!canSubmit}
             >
               Sign In
             </Button>

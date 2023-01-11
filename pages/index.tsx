@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useDebouncedCallback } from "use-debounce";
 import AddTodoForm from "../src/components/AddTodoForm";
 import ToDoListItem from "../src/components/ToDoListItem";
@@ -145,7 +145,6 @@ export default function ToDoList() {
           </Grid>
         </Grid>
       </ThemeProvider>
-      <ToastContainer />
     </>
   );
 }

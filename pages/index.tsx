@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import { useDebouncedCallback } from "use-debounce";
 import AddTodoForm from "../src/components/AddTodoForm";
 import ToDoListItem from "../src/components/ToDoListItem";
@@ -49,7 +50,6 @@ export default function ToDoList() {
       })
       .then((response) => {
         setToDos(response.data.data);
-        console.log("response data", response.data.data);
       });
   }, []);
 
@@ -82,62 +82,65 @@ export default function ToDoList() {
           ...prevToDo.filter(({ id }) => id !== toDo.id),
           response.data.data,
         ]);
+        toast.success("내용 저장이 완료되었습니다.");
       });
   }, 1000);
 
-  console.log("selectedTodo", selectedTodo);
-  console.log("Todos", toDos);
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AddTodoForm />
-      <Grid container sx={{ width: "80vw" }}>
-        <Grid item sx={{ width: "50%" }}>
-          <Container sx={{ minHeight: "100vh" }}>
-            <List
-              sx={{
-                bgcolor: "background.paper",
-                overflow: "auto",
-              }}
-              dense
-              component="div"
-              role="list"
-            >
-              {toDos.map((toDo) => (
-                <ToDoListItem key={toDo.id} toDo={toDo} setToDos={setToDos} />
-              ))}
-            </List>
-          </Container>
-        </Grid>
-        <Grid item sx={{ width: "50%", backgroundColor: "white" }}>
-          {selectedTodo === "" && (
+    <>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AddTodoForm />
+        <Grid container sx={{ width: "80vw" }}>
+          <Grid item sx={{ width: "50%" }}>
             <Container sx={{ minHeight: "100vh" }}>
-              메모를 선택해주세요
+              <List
+                sx={{
+                  bgcolor: "background.paper",
+                  overflow: "auto",
+                }}
+                dense
+                component="div"
+                role="list"
+              >
+                {toDos.map((toDo) => (
+                  <ToDoListItem key={toDo.id} toDo={toDo} setToDos={setToDos} />
+                ))}
+              </List>
             </Container>
-          )}
-          {selectedTodo !== "" && (
-            <TextField
-              inputProps={{ sx: { minHeight: "100vh" } }}
-              fullWidth
-              multiline
-              value={toDos.find(({ id }) => id === selectedTodo)?.content}
-              onChange={(e) => {
-                const targetTodo = toDos.find(({ id }) => id === selectedTodo);
-                if (targetTodo === undefined) {
-                  return;
-                }
-                const newTodo = { ...targetTodo, content: e.target.value };
-                setToDos((prevTodos) => [
-                  ...prevTodos.filter(({ id }) => id !== selectedTodo),
-                  newTodo,
-                ]);
-                debouncedSaveContent(newTodo);
-              }}
-            />
-          )}
+          </Grid>
+          <Grid item sx={{ width: "50%", backgroundColor: "white" }}>
+            {selectedTodo === "" && (
+              <Container sx={{ minHeight: "100vh" }}>
+                메모를 선택해주세요
+              </Container>
+            )}
+            {selectedTodo !== "" && (
+              <TextField
+                inputProps={{ sx: { minHeight: "100vh" } }}
+                fullWidth
+                multiline
+                value={toDos.find(({ id }) => id === selectedTodo)?.content}
+                onChange={(e) => {
+                  const targetTodo = toDos.find(
+                    ({ id }) => id === selectedTodo
+                  );
+                  if (targetTodo === undefined) {
+                    return;
+                  }
+                  const newTodo = { ...targetTodo, content: e.target.value };
+                  setToDos((prevTodos) => [
+                    ...prevTodos.filter(({ id }) => id !== selectedTodo),
+                    newTodo,
+                  ]);
+                  debouncedSaveContent(newTodo);
+                }}
+              />
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-    </ThemeProvider>
+      </ThemeProvider>
+      <ToastContainer />
+    </>
   );
 }

@@ -112,7 +112,7 @@ export default function ToDoList() {
           <Grid item sx={{ width: "50%", backgroundColor: "white" }}>
             {selectedTodo === "" && (
               <Container sx={{ minHeight: "100vh" }}>
-                메모를 선택해주세요
+                상세 내역을 보려면 왼쪽에서 할 일을 선택해주세요
               </Container>
             )}
             {selectedTodo !== "" && (
@@ -120,7 +120,10 @@ export default function ToDoList() {
                 inputProps={{ sx: { minHeight: "100vh" } }}
                 fullWidth
                 multiline
-                value={toDos.find(({ id }) => id === selectedTodo)?.content}
+                value={
+                  toDos.find(({ id }) => id === selectedTodo)?.content ??
+                  "상세 내역을 보려면 왼쪽에서 할 일을 선택해주세요"
+                }
                 onChange={(e) => {
                   const targetTodo = toDos.find(
                     ({ id }) => id === selectedTodo

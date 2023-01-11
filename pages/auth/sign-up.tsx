@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import * as React from "react";
 import { useState } from "react";
 import TokenLocalStorage from "../../utils/localStorage/tokenLocalStorage";
+import { toast } from "react-toastify";
 
 function Copyright(props: any) {
   return (
@@ -46,6 +47,7 @@ export default function SignUp() {
   const validatePassword = (password: string) => password.length >= 8;
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const loadingToastId = toast.loading("로그인 중입니다.");
     axios
       .post<{
         message: string;
@@ -58,9 +60,23 @@ export default function SignUp() {
         { withCredentials: true }
       )
       .then((value) => {
+        toast.update(loadingToastId, {
+          render: "회원 가입에 성공하였습니다!",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
         const tokenStorage = new TokenLocalStorage();
         tokenStorage.setToken(value.data.token);
         router.replace("/");
+      })
+      .catch(() => {
+        toast.update(loadingToastId, {
+          render: "회원가입에 실패하였습니다.",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
       });
   };
 
@@ -147,17 +163,12 @@ export default function SignUp() {
               sx={{ mt: 3, mb: 2 }}
               disabled={!canSubmit}
             >
-              Sign Up
+              회원가입
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Do have an account? Sign In"}
+                <Link href="/auth/login" variant="body2">
+                  로그인 화면으로 이동하기
                 </Link>
               </Grid>
             </Grid>

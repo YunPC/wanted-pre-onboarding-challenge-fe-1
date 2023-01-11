@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -15,6 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import TokenLocalStorage from "../../utils/localStorage/tokenLocalStorage";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function Copyright(props: any) {
   return (
@@ -37,6 +37,8 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const router = useRouter();
+
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPassWordError] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -49,7 +51,37 @@ export default function SignIn() {
   const validatePassword = (password: string) => password.length >= 8;
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const loadingToastId = toast.loading("로그인 중입니다.");
+    axios
+      .post<{
+        message: string;
+        token: string;
+      }>(
+        "http://localhost:8080/users/login",
+        {
+          ...loginData,
+        },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        const tokenStorage = new TokenLocalStorage();
+        tokenStorage.setToken(response.data.token);
+        toast.update(loadingToastId, {
+          render: "로그인에 성공하였습니다.",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
+        router.replace("/");
+      })
+      .catch(() => {
+        toast.update(loadingToastId, {
+          render: "로그인에 실패하였습니다.",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
   };
   const canSubmit =
     !!loginData.email && !!loginData.password && !emailError && !passwordError;
@@ -125,10 +157,6 @@ export default function SignIn() {
                 setPassWordError(!validatePassword(e.target.value));
               }}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -136,17 +164,12 @@ export default function SignIn() {
               sx={{ mt: 3, mb: 2 }}
               disabled={!canSubmit}
             >
-              Sign In
+              로그인
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                <Link href="/auth/sign-up" variant="body2">
+                  회원 가입 화면으로 이동
                 </Link>
               </Grid>
             </Grid>

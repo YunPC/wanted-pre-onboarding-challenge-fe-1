@@ -1,11 +1,27 @@
 import { ThemeProvider } from "@emotion/react";
-import { Container, createTheme, CssBaseline, Grid, List } from "@mui/material";
+import {
+  Container,
+  createTheme,
+  CssBaseline,
+  Grid,
+  List,
+  TextField,
+} from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import AddTodoForm from "../src/components/AddTodoForm";
 import ToDoListItem from "../src/components/ToDoListItem";
 import TokenLocalStorage from "../utils/localStorage/tokenLocalStorage";
+
+interface ToDo {
+  title: string;
+  content: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function ToDoList() {
   const [toDos, setToDos] = useState<
@@ -51,6 +67,27 @@ export default function ToDoList() {
     }
   }, [router.query?.selectedId]);
 
+  const debouncedSaveContent = useDebouncedCallback((toDo: ToDo) => {
+    axios
+      .put<{ data: ToDo }>(
+        `http://localhost:8080/todos/${toDo.id}`,
+        {
+          title: toDo.title,
+          content: toDo.content,
+        },
+        { headers: { Authorization: new TokenLocalStorage().getToken() } }
+      )
+      .then((response) => {
+        setToDos((prevToDo) => [
+          ...prevToDo.filter(({ id }) => id !== toDo.id),
+          response.data.data,
+        ]);
+      });
+  }, 1000);
+
+  console.log("selectedTodo", selectedTodo);
+  console.log("Todos", toDos);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -74,11 +111,31 @@ export default function ToDoList() {
           </Container>
         </Grid>
         <Grid item sx={{ width: "50%", backgroundColor: "white" }}>
-          <Container sx={{ minHeight: "100vh" }}>
-            {selectedTodo !== ""
-              ? toDos.find(({ id }) => id === selectedTodo)?.content
-              : "메모를 선택해 주세요"}
-          </Container>
+          {selectedTodo === "" && (
+            <Container sx={{ minHeight: "100vh" }}>
+              메모를 선택해주세요
+            </Container>
+          )}
+          {selectedTodo !== "" && (
+            <TextField
+              inputProps={{ sx: { minHeight: "100vh" } }}
+              fullWidth
+              multiline
+              value={toDos.find(({ id }) => id === selectedTodo)?.content}
+              onChange={(e) => {
+                const targetTodo = toDos.find(({ id }) => id === selectedTodo);
+                if (targetTodo === undefined) {
+                  return;
+                }
+                const newTodo = { ...targetTodo, content: e.target.value };
+                setToDos((prevTodos) => [
+                  ...prevTodos.filter(({ id }) => id !== selectedTodo),
+                  newTodo,
+                ]);
+                debouncedSaveContent(newTodo);
+              }}
+            />
+          )}
         </Grid>
       </Grid>
     </ThemeProvider>

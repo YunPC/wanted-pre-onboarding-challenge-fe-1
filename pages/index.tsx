@@ -90,7 +90,7 @@ export default function ToDoList() {
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AddTodoForm />
+        <AddTodoForm setToDos={setToDos} />
         <Grid container sx={{ width: "80vw" }}>
           <Grid item sx={{ width: "50%" }}>
             <Container sx={{ minHeight: "100vh" }}>

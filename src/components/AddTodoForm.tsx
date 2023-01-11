@@ -3,13 +3,25 @@ import axios from "axios";
 import { useState } from "react";
 import TokenLocalStorage from "../../utils/localStorage/tokenLocalStorage";
 
-function AddTodoForm() {
+interface ToDo {
+  title: string;
+  content: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface AddToDoFormProps {
+  setToDos: React.Dispatch<React.SetStateAction<ToDo[]>>;
+}
+
+function AddTodoForm({ setToDos }: AddToDoFormProps) {
   const [ToDo, setTodo] = useState({ title: "", content: "" });
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const tokenStorage = new TokenLocalStorage();
     axios
-      .post(
+      .post<{ data: ToDo }>(
         "http://localhost:8080/todos",
         {
           ...ToDo,
@@ -17,7 +29,7 @@ function AddTodoForm() {
         { headers: { Authorization: tokenStorage.getToken() } }
       )
       .then((value) => {
-        console.log("value", value);
+        setToDos((prevToDos) => [...prevToDos, value.data.data]);
       });
   };
   return (

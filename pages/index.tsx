@@ -25,6 +25,7 @@ interface ToDo {
 }
 
 export default function ToDoList() {
+  const router = useRouter();
   const [toDos, setToDos] = useState<
     {
       title: string;
@@ -50,14 +51,15 @@ export default function ToDoList() {
       })
       .then((response) => {
         setToDos(response.data.data);
+      })
+      .catch(() => {
+        router.replace("/auth/login");
       });
-  }, []);
+  }, [router]);
 
   const theme = createTheme();
 
   const [selectedTodo, setSelectedTodo] = useState("");
-
-  const router = useRouter();
 
   useEffect(() => {
     if (router.query?.selectedId) {
